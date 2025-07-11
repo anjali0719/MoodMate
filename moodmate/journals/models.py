@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class JournalEntry(models.Model):
     input_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True) # saves the time of object creation only
-    journal_title = models.CharField(max_length=50)
+    journal_title = models.CharField(max_length=50, default='Untitled Journal')
     response_text = models.TextField()
     
     def __str__(self):
