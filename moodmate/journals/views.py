@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from django.http.response import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from openai import OpenAI
 from journals.models import JournalEntry
@@ -39,6 +40,7 @@ def generate_title(user_input):
 
 
 @require_POST
+@csrf_exempt
 def analyze_mood(request):
     data = json.loads(request.body)
     try:
@@ -58,17 +60,17 @@ def analyze_mood(request):
 
         journal_entry = JournalEntry.objects.create(
             input_text=user_input,
-            journal_title=generate_title,
+            journal_title=generate_title(user_input),
             response_text=completion.choices[0].message.content
         )
 
         context = {
             'user_input': journal_entry.input_text,
             'response_msg': journal_entry.response_text,
-            'journal_title': generate_title(user_input)
+            'journal_title': journal_entry.journal_title
         }
         
-        return render(template_name='journals/student.html', context=context)
+        return render(request, template_name='journals/student.html', context=context)
     
     except Exception as e:
         print(f"Something went wrong, while processing the request: {e}")
@@ -76,6 +78,7 @@ def analyze_mood(request):
 
 
 @require_GET
+@csrf_exempt
 def search_journal_entries(request):
     query = request.GET.get('q', '')
     if not query:
@@ -87,8 +90,15 @@ def search_journal_entries(request):
         'sort_by': 'created_at:desc'
     }
 
-    results = typesense_client.collections['journal_entries'].documents.search(search_parameters)
-    return JsonResponse({ 'results': results })
+    # signal might have given error while schema creation - check how it can be fixed
+    # check if search api key is required? or admin key will work
+    # create_schema func can be called on conditional basis
+    try:
+        results = typesense_client.collections['journal_entries'].documents.search(search_parameters)
+        return JsonResponse({ 'results': results })
+    except Exception as e:
+        print(f"Something went wrong in search: {e}")
+        return { 'results': [] }
 
 
 def student_form(request):

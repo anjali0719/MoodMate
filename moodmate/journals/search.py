@@ -9,9 +9,19 @@ if not os.environ.get("SEARCH_API_KEY"):
 
 typesense_client = typesense.Client({
   'nodes': [{
-    'host': 'xxx.a1.typesense.net', # For Typesense Cloud use xxx.a1.typesense.net
-    'port': '443',      # For Typesense Cloud use 443
-    'protocol': 'https'   # For Typesense Cloud use https
+    'host': os.environ.get("TYPESENSE_HOST"),
+    'port': os.environ.get("TYPESENSE_PORT"),
+    'protocol': os.environ.get("TYPESENSE_PROTOCOL")
+  }],
+  'api_key': os.environ.get("ADMIN_API_KEY"),
+  'connection_timeout_seconds': 2
+})
+
+typesense_search_client = typesense.Client({
+  'nodes': [{
+    'host': os.environ.get("TYPESENSE_HOST"),
+    'port': os.environ.get("TYPESENSE_PORT"),
+    'protocol': os.environ.get("TYPESENSE_PROTOCOL")
   }],
   'api_key': os.environ.get("SEARCH_API_KEY"),
   'connection_timeout_seconds': 2
