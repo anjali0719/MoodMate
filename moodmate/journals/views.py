@@ -64,13 +64,21 @@ def analyze_mood(request):
             response_text=completion.choices[0].message.content
         )
 
-        context = {
-            'user_input': journal_entry.input_text,
-            'response_msg': journal_entry.response_text,
+        # context = {
+        #     'user_input': journal_entry.input_text,
+        #     'response_msg': journal_entry.response_text,
+        #     'journal_title': journal_entry.journal_title
+        # }
+
+        return JsonResponse({
+            'error': False,
+            'response': completion.choices[0].message.content,
+            'journal_id': journal_entry.id,
             'journal_title': journal_entry.journal_title
-        }
+        })
         
-        return render(request, template_name='journals/student.html', context=context)
+        # return render(request, template_name='journals/student.html', context=context)
+
     
     except Exception as e:
         print(f"Something went wrong, while processing the request: {e}")
@@ -109,6 +117,3 @@ def search_journal_entries(request):
         print(f"Something went wrong in search: {e}")
         return { 'results': [] }
 
-
-def student_form(request):
-    return render(request, 'journals/student.html')

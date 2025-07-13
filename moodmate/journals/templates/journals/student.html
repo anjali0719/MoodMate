@@ -1,9 +1,6 @@
-{% extends "base.html" %}
-
-{% block title %}Student Form{% endblock %}
-
-{% block content %}
-    <h2>Enter Student Details</h2>
+{% extends "base.html" %} {% block title %}Student Form{% endblock %} {% block
+content %}
+<!-- <h2>Enter Student Details</h2>
     <form>
         <label>First Name:</label><br>
         <input type="text"><br><br>
@@ -15,5 +12,57 @@
         <input type="text"><br><br>
 
         <button type="submit">Submit</button>
-    </form>
+    </form> -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Chat App</title>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">
+        Chat App
+        <span class="online-indicator"></span>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        {% if response_msg %}
+        <div class="message received">
+          <!-- <div>Welcome to the chat! 👋</div> -->
+          <div>{{ response_msg }}</div>
+          <!-- <div class="message-time">12:30 PM</div> -->
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <!-- <input
+          type="text"
+          class="chat-input"
+          id="chatInput"
+          placeholder="Type your message..."
+          maxlength="500"
+        /> -->
+        <textarea
+          class="chat-input"
+          id="chatInput"
+          placeholder="Type your message..."
+          maxlength="500"
+          rows="1"
+        ></textarea>
+        <button class="send-button" id="sendButton">➤</button>
+      </div>
+    </div>
+  </body>
+</html>
 {% endblock %}
