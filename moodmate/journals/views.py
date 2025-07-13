@@ -90,10 +90,19 @@ def search_journal_entries(request):
         'sort_by': 'created_at:desc'
     }
 
-    # signal might have given error while schema creation - check how it can be fixed
-    # check if search api key is required? or admin key will work
     # create_schema func can be called on conditional basis
     try:
+        # reindexing:
+        # journal_obj = JournalEntry.objects.all()
+        # for obj in journal_obj:
+        #     typesense_client.collections['journal_entries'].documents.upsert({
+        #         'id': str(obj.id),
+        #         'journal_title': obj.journal_title,
+        #         'input_text': obj.input_text,
+        #         'response_text': obj.response_text,
+        #         'created_at': int(obj.created_at.timestamp())
+        #     })
+            
         results = typesense_client.collections['journal_entries'].documents.search(search_parameters)
         return JsonResponse({ 'results': results })
     except Exception as e:

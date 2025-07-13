@@ -4,7 +4,7 @@ import typesense
 
 load_dotenv()
 
-if not os.environ.get("SEARCH_API_KEY"):
+if not os.environ.get("TYPESENSE_ADMIN_API_KEY"):
   raise ValueError("Typesense API key not set")
 
 typesense_client = typesense.Client({
@@ -13,19 +13,10 @@ typesense_client = typesense.Client({
     'port': os.environ.get("TYPESENSE_PORT"),
     'protocol': os.environ.get("TYPESENSE_PROTOCOL")
   }],
-  'api_key': os.environ.get("ADMIN_API_KEY"),
+  'api_key': os.environ.get("TYPESENSE_ADMIN_API_KEY"),
   'connection_timeout_seconds': 2
 })
 
-typesense_search_client = typesense.Client({
-  'nodes': [{
-    'host': os.environ.get("TYPESENSE_HOST"),
-    'port': os.environ.get("TYPESENSE_PORT"),
-    'protocol': os.environ.get("TYPESENSE_PROTOCOL")
-  }],
-  'api_key': os.environ.get("SEARCH_API_KEY"),
-  'connection_timeout_seconds': 2
-})
 
 
 def create_schema():
