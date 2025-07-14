@@ -1,18 +1,5 @@
 {% extends "base.html" %} {% block title %}Student Form{% endblock %} {% block
 content %}
-<!-- <h2>Enter Student Details</h2>
-    <form>
-        <label>First Name:</label><br>
-        <input type="text"><br><br>
-
-        <label>Last Name:</label><br>
-        <input type="text"><br><br>
-
-        <label>School Name:</label><br>
-        <input type="text"><br><br>
-
-        <button type="submit">Submit</button>
-    </form> -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -21,6 +8,19 @@ content %}
     <title>Simple Chat App</title>
   </head>
   <body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-toggle" id="sidebarToggle">
+        <!-- Top button (could be an icon) -->
+        <span class="toggle-icon">&#9776;</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-btn">+</button>
+        <button class="sidebar-btn">&#128100;</button>
+        <button class="sidebar-btn">&#9881;</button>
+        <button class="sidebar-btn">A</button>
+      </nav>
+    </div>
     <div class="chat-container">
       <div class="chat-header">
         Chat App
@@ -30,9 +30,21 @@ content %}
       <div class="chat-messages" id="chatMessages">
         {% if response_msg %}
         <div class="message received">
-          <!-- <div>Welcome to the chat! 👋</div> -->
           <div>{{ response_msg }}</div>
           <!-- <div class="message-time">12:30 PM</div> -->
+        </div>
+        {% else %}
+        <div class="message received">
+          <div>
+            No response available. Today I started watching Harry Potter series
+            again. It is indeed a delight to watch it specially on rainy days.
+          </div>
+        </div>
+        <div class="message sent">
+          <div>
+            No response available. Today I started watching Harry Potter series
+            again. It is indeed a delight to watch it specially on rainy days.
+          </div>
         </div>
         {% endif %}
       </div>

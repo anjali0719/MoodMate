@@ -6,20 +6,6 @@ const typingIndicator = document.getElementById('typingIndicator');
 let messageId = 0;
 let isProcessing = false;
 
-// Sample auto-responses
-// const autoResponses = [
-//     "That's interesting! Tell me more 🤔",
-//     "I totally agree with you! 👍",
-//     "Wow, I hadn't thought about it that way 💭",
-//     "That sounds amazing! 🎉",
-//     "Thanks for sharing that with me 😊",
-//     "I see what you mean 👀",
-//     "That's a great point! 💡",
-//     "Absolutely! 💯",
-//     "I love your perspective on this 🌟",
-//     "That made me smile 😄"
-// ];
-
 function getCurrentTime() {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -74,14 +60,9 @@ async function sendMessage() {
     // Show typing indicator and simulate response
     showTypingIndicator();
 
-    // setTimeout(() => {
-    //     hideTypingIndicator();
-    //     const randomResponse = autoResponses[Math.floor(Math.random() * autoResponses.length)];
-    //     addMessage(randomResponse, 'received');
-    // }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
 
     try {
-        const response = await fetch('/analyze-mood', {
+        const response = await fetch('/api/v1/analyze-mood/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -90,7 +71,17 @@ async function sendMessage() {
         });
         const data = await response.json();
         hideTypingIndicator();
-        addMessage(data.response, 'received');
+
+        if (data.error) {
+            addMessage(`Error: ${data.response}`, 'received');
+        } else {
+            addMessage(data.response, 'received');
+            
+            // Optional: Update page title with journal title
+            if (data.journal_title) {
+                document.title = `Chat - ${data.journal_title}`;
+            }
+        }
     } catch (error) {
         hideTypingIndicator();
         console.error('Error:', error);
@@ -104,23 +95,12 @@ async function sendMessage() {
 // Event listeners
 sendButton.addEventListener('click', sendMessage);
 
-// chatInput.addEventListener('keypress', (e) => {
-//     if (e.key === 'Enter' && !e.shiftKey) {
-//         e.preventDefault
-//         sendMessage();
-//     }
-// });
-
-// chatInput.addEventListener('input', (e) => {
-//     if (e.target.value.length > 0) {
-//         sendButton.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-//     } else {
-//         sendButton.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-//     }
-// });
-
-// // Focus on input when page loads
-// chatInput.focus();
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
 
 chatInput.addEventListener('input', (e) => {
     // Visual feedback for send button
@@ -142,4 +122,11 @@ chatInput.addEventListener('input', function() {
 // Focus on input when page loads
 document.addEventListener('DOMContentLoaded', function() {
     chatInput.focus();
+});
+
+const sidebar = document.getElementById('sidebar');
+const toggle = document.getElementById('sidebarToggle');
+toggle.addEventListener('click', () => {
+    sidebar.classList.toggle('expanded');
+    document.body.classList.toggle('sidebar-open');
 });

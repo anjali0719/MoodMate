@@ -77,7 +77,7 @@ def analyze_mood(request):
             'journal_title': journal_entry.journal_title
         })
         
-        # return render(request, template_name='journals/student.html', context=context)
+        # return render(request, template_name='journals/chat.html', context=context)
 
     
     except Exception as e:
@@ -117,3 +117,6 @@ def search_journal_entries(request):
         print(f"Something went wrong in search: {e}")
         return { 'results': [] }
 
+
+def chat(request):
+    return render(request, 'journals/chat.html')
