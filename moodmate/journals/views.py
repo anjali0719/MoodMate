@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from openai import OpenAI
-from journals.models import JournalEntry
+from journals.models import JournalEntry, ChatSession
 from journals.search import typesense_client
 
 load_dotenv()
@@ -58,23 +58,26 @@ def analyze_mood(request):
             ]
         )
 
+        chat_session_id = data.get("chat_session_id", None)
+        if not chat_session_id:
+            chat_session = ChatSession.objects.create(title=generate_title(user_input))
+            chat_session_id = chat_session.id
+
         journal_entry = JournalEntry.objects.create(
             input_text=user_input,
-            journal_title=generate_title(user_input),
-            response_text=completion.choices[0].message.content
+            response_text=completion.choices[0].message.content,
+            chat_session=chat_session_id
         )
 
         # context = {
         #     'user_input': journal_entry.input_text,
         #     'response_msg': journal_entry.response_text,
-        #     'journal_title': journal_entry.journal_title
         # }
 
         return JsonResponse({
             'error': False,
             'response': completion.choices[0].message.content,
             'journal_id': journal_entry.id,
-            'journal_title': journal_entry.journal_title
         })
         
         # return render(request, template_name='journals/chat.html', context=context)
@@ -120,3 +123,34 @@ def search_journal_entries(request):
 
 def chat(request):
     return render(request, 'journals/chat.html')
+
+@require_GET
+@csrf_exempt
+def chat_list(request):
+    # we can only show the session list in the nav bar, cos we need only the title to be seen by user 
+    # until they choose to open a particular chat
+
+    # Nav Bar: ChatSessions
+    chats = ChatSession.objects.all().order_by('created_at')
+
+    # Open a chat
+    chat_session_id = request.GET.get('chat_session_id', None)
+    if not chat_session_id:
+        return JsonResponse({
+            'error': 400,
+            'message': "A chat should be selected to get the full details"
+        })
+    else:
+        session_obj = ChatSession.objects.get(id=chat_session_id)
+        if not session_obj:
+            return JsonResponse({
+                'error': 404,
+                'message': f"No chat with Id: {chat_session_id} exists in our record"
+            })
+        else:
+            chat = JournalEntry.objects.filter(chat_session__id=chat_session_id).order_by('created_at')
+
+    return JsonResponse({
+        'chat_list': chats,
+        'chat_obj': chat
+    })

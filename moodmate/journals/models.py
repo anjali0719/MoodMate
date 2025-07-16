@@ -23,6 +23,3 @@ class JournalEntry(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-
-# everytime users opens a chat window, get the chat_session.id based on it filter the JournalEntry objects. If there is no chat_session, create a new one.
-# If there is a chat_session, create a new JournalEntry with the chat_session.id.
