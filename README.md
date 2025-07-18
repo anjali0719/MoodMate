@@ -69,5 +69,6 @@ python manage.py createsuperuser
 
 ### Run Development Server
 ```bash
+cd moodmate
 python manage.py runserver
 ```
