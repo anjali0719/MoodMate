@@ -15,10 +15,16 @@ content %}
         <span class="toggle-icon">&#9776;</span>
       </div>
       <nav class="sidebar-nav">
-        <button class="sidebar-btn">+</button>
-        <button class="sidebar-btn">&#128100;</button>
-        <button class="sidebar-btn">&#9881;</button>
         <button class="sidebar-btn">A</button>
+        <button class="sidebar-btn">+</button>
+        <div class="sidebar-section">Recents</div>
+        <ul class="chat-list">
+          {% for a in arr %}
+          <li class="sidebar-btn chat-navigation chat-btn" data-chat-id="{{a}}">
+            Chat {{a}}
+          </li>
+          {% endfor %}
+        </ul>
       </nav>
     </div>
     <div class="chat-container">

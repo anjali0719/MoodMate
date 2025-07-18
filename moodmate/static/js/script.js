@@ -130,3 +130,22 @@ toggle.addEventListener('click', () => {
     sidebar.classList.toggle('expanded');
     document.body.classList.toggle('sidebar-open');
 });
+
+document.querySelectorAll('.chat-navigation').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const chatId = this.getAttribute('data-chat-id');
+    fetch(`/chat/${chatId}`)
+      .then(response => response.json())
+      .then(data => {
+        // Assuming data.messages is an array of message objects
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';
+        data.messages.forEach(msg => {
+          const msgDiv = document.createElement('div');
+          msgDiv.className = msg.sent ? 'message sent' : 'message received';
+          msgDiv.innerHTML = `<div>${msg.text}</div>`;
+          chatMessages.appendChild(msgDiv);
+        });
+      });
+  });
+});

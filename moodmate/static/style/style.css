@@ -365,20 +365,69 @@ body {
     cursor: pointer;
 }
 
-.sidebar-btn:hover {
-    background: #333;
+/* .sidebar-btn:hover {
+    background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
     color: #e07a5f;
-}
+} */
 
 /* When expanded, align buttons left and show labels if needed */
 .sidebar.expanded .sidebar-nav {
     align-items: flex-start;
-    padding-left: 20px;
 }
 
 .sidebar.expanded .sidebar-btn {
     justify-content: flex-start;
     width: 90%;
+}
+
+.sidebar .chat-btn {
+    display: none;
+}
+
+.sidebar-section {
+    display: none;
+}
+
+.sidebar.expanded .sidebar-section {
+    display: block;
+}
+
+.sidebar.expanded .chat-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 190px; /* Sidebar width (230px) - padding (20px left + 20px right) */
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.08em;
+    padding: 0; /* Padding for left alignment */
+    border-radius: 8px;
+    background: none;
+    color: #fff;
+    transition: background 0.2s;
+    cursor: pointer;
+    border: none;
+    margin-bottom: 2px;
+    text-align: left;
+}
+
+/* .sidebar.expanded .chat-btn:hover {
+    background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
+    color: #e07a5f;
+} */
+
+.sidebar.expanded .sidebar-section {
+    color: #ccc;
+    font-size: 0.95em;
+    font-weight: 600;
+    padding: 18px 18px 8px 18px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #333;
+    margin-bottom: 8px;
 }
 
 /* Push main content right when sidebar is expanded */
