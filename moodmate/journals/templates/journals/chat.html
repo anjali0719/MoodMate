@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %}Student Form{% endblock %} {% block
+{% extends "base.html" %} {% block title %}Chat App{% endblock %} {% block
 content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -19,9 +19,12 @@ content %}
         <button class="sidebar-btn">+</button>
         <div class="sidebar-section">Recents</div>
         <ul class="chat-list">
-          {% for a in arr %}
-          <li class="sidebar-btn chat-navigation chat-btn" data-chat-id="{{a}}">
-            Chat {{a}}
+          {% for session in chat_sessions %}
+          <li
+            class="sidebar-btn chat-navigation chat-btn"
+            chat-session-id="{{session.id}}"
+          >
+            {{ session.title }}
           </li>
           {% endfor %}
         </ul>
@@ -34,25 +37,10 @@ content %}
       </div>
 
       <div class="chat-messages" id="chatMessages">
-        {% if response_msg %}
-        <div class="message received">
+        <!-- <div class="message received">
           <div>{{ response_msg }}</div>
-          <!-- <div class="message-time">12:30 PM</div> -->
-        </div>
-        {% else %}
-        <div class="message received">
-          <div>
-            No response available. Today I started watching Harry Potter series
-            again. It is indeed a delight to watch it specially on rainy days.
-          </div>
-        </div>
-        <div class="message sent">
-          <div>
-            No response available. Today I started watching Harry Potter series
-            again. It is indeed a delight to watch it specially on rainy days.
-          </div>
-        </div>
-        {% endif %}
+          <div class="message-time">12:30 PM</div>
+        </div> -->
       </div>
 
       <div class="typing-indicator" id="typingIndicator">
@@ -64,13 +52,6 @@ content %}
       </div>
 
       <div class="chat-input-container">
-        <!-- <input
-          type="text"
-          class="chat-input"
-          id="chatInput"
-          placeholder="Type your message..."
-          maxlength="500"
-        /> -->
         <textarea
           class="chat-input"
           id="chatInput"

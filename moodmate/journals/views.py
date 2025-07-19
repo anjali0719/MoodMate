@@ -46,7 +46,7 @@ def analyze_mood(request):
     try:
         user_input = data.get("user_input", None)
         if not user_input:
-            return HttpResponse("Please enter something to get started")
+            return JsonResponse({'message': "Please enter something to get started"}, status=400)
         
         completion = client.chat.completions.create(
             model="gpt-4.1-mini",
@@ -61,12 +61,13 @@ def analyze_mood(request):
         chat_session_id = data.get("chat_session_id", None)
         if not chat_session_id:
             chat_session = ChatSession.objects.create(title=generate_title(user_input))
-            chat_session_id = chat_session.id
+        else:
+            chat_session = ChatSession.objects.get(id=chat_session_id)
 
         journal_entry = JournalEntry.objects.create(
             input_text=user_input,
             response_text=completion.choices[0].message.content,
-            chat_session=chat_session_id
+            chat_session=chat_session
         )
 
         # context = {
@@ -122,35 +123,35 @@ def search_journal_entries(request):
 
 
 def chat(request):
-    return render(request, 'journals/chat.html')
+    chat_sessions = ChatSession.objects.all().order_by('-created_at')
+    return render(request, 'journals/chat.html', {'chat_sessions': chat_sessions})
+
 
 @require_GET
 @csrf_exempt
 def chat_list(request):
-    # we can only show the session list in the nav bar, cos we need only the title to be seen by user 
-    # until they choose to open a particular chat
-
+    # As of now, we use context to send the chat session on nav bar, so this may not be reqd
     # Nav Bar: ChatSessions
-    chats = ChatSession.objects.all().order_by('created_at')
+    # chat_sessions = ChatSession.objects.all().order_by('-created_at')
+
+    # res = {
+    #     'chat_list': list(chat_sessions.values('id', 'title'))
+    # }
+    res = {}
 
     # Open a chat
     chat_session_id = request.GET.get('chat_session_id', None)
-    if not chat_session_id:
-        return JsonResponse({
-            'error': 400,
-            'message': "A chat should be selected to get the full details"
-        })
-    else:
-        session_obj = ChatSession.objects.get(id=chat_session_id)
-        if not session_obj:
+    if chat_session_id:
+        try:
+            session_obj = ChatSession.objects.get(id=chat_session_id)
+            chat_entry = JournalEntry.objects.filter(chat_session=session_obj).order_by('created_at')
+
+            res['chat_obj'] = list(chat_entry.values('id', 'input_text', 'response_text', 'created_at'))
+        
+        except ChatSession.DoesNotExist:
             return JsonResponse({
                 'error': 404,
                 'message': f"No chat with Id: {chat_session_id} exists in our record"
-            })
-        else:
-            chat = JournalEntry.objects.filter(chat_session__id=chat_session_id).order_by('created_at')
-
-    return JsonResponse({
-        'chat_list': chats,
-        'chat_obj': chat
-    })
+            }, status= 404)
+    
+    return JsonResponse(res, safe=False)

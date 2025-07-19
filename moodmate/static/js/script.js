@@ -11,6 +11,12 @@ function getCurrentTime() {
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+function formatTime(time) {
+    const givenDate = new Date(time);
+    return givenDate.toDateString() + " " + givenDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+
 function addMessage(text, type = 'sent') {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
@@ -36,7 +42,7 @@ function hideTypingIndicator() {
 function setInputEnabled(enabled) {
     chatInput.disabled = !enabled;
     sendButton.disabled = !enabled;
-    
+
     if (enabled) {
         sendButton.style.opacity = '1';
         sendButton.style.cursor = 'pointer';
@@ -60,7 +66,6 @@ async function sendMessage() {
     // Show typing indicator and simulate response
     showTypingIndicator();
 
-
     try {
         const response = await fetch('/api/v1/analyze-mood/', {
             method: 'POST',
@@ -76,12 +81,12 @@ async function sendMessage() {
             addMessage(`Error: ${data.response}`, 'received');
         } else {
             addMessage(data.response, 'received');
-            
             // Optional: Update page title with journal title
             if (data.journal_title) {
                 document.title = `Chat - ${data.journal_title}`;
             }
         }
+
     } catch (error) {
         hideTypingIndicator();
         console.error('Error:', error);
@@ -114,13 +119,13 @@ chatInput.addEventListener('input', (e) => {
 });
 
 // Auto-resize textarea for longer messages
-chatInput.addEventListener('input', function() {
+chatInput.addEventListener('input', function () {
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
 // Focus on input when page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     chatInput.focus();
 });
 
@@ -132,20 +137,38 @@ toggle.addEventListener('click', () => {
 });
 
 document.querySelectorAll('.chat-navigation').forEach(btn => {
-  btn.addEventListener('click', function() {
-    const chatId = this.getAttribute('data-chat-id');
-    fetch(`/chat/${chatId}`)
-      .then(response => response.json())
-      .then(data => {
-        // Assuming data.messages is an array of message objects
-        const chatMessages = document.getElementById('chatMessages');
-        chatMessages.innerHTML = '';
-        data.messages.forEach(msg => {
-          const msgDiv = document.createElement('div');
-          msgDiv.className = msg.sent ? 'message sent' : 'message received';
-          msgDiv.innerHTML = `<div>${msg.text}</div>`;
-          chatMessages.appendChild(msgDiv);
-        });
-      });
-  });
+    btn.addEventListener('click', function () {
+        const chatSessionId = this.getAttribute('chat-session-id');
+        fetch(`/api/v1/chat-list/?chat_session_id=${chatSessionId}`)
+            .then(response => response.json())
+            .then(data => {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+                if (data.chat_obj && data.chat_obj.length > 0) {
+                    data.chat_obj.forEach(entry => {
+                        // USER MESSAGE (input_text)
+                        const userMsg = document.createElement('div');
+                        userMsg.className = 'message sent';
+                        userMsg.innerHTML = `
+                            <div>${entry.input_text || 'No input available.'}</div>
+                            <div class="message-time">${formatTime(entry.created_at)}</div>
+                        `;
+                        chatMessages.appendChild(userMsg);
+
+                        // SYSTEM RESPONSE (response_text)
+                        if (entry.response_text) {
+                            const systemMsg = document.createElement('div');
+                            systemMsg.className = 'message received';
+                            systemMsg.innerHTML = `
+                                <div>${entry.response_text}</div>
+                                <div class="message-time">${formatTime(entry.created_at)}</div>
+                            `;
+                            chatMessages.appendChild(systemMsg);
+                        }
+                    });
+                } else {
+                    chatMessages.innerHTML = '<p>No messages in this chat yet.</p>';
+                }
+            });
+    });
 });
