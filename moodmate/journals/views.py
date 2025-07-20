@@ -58,7 +58,7 @@ def analyze_mood(request):
             ]
         )
 
-        chat_session_id = data.get("chat_session_id", None)
+        chat_session_id = request.GET.get("chat_session_id", None)
         if not chat_session_id:
             chat_session = ChatSession.objects.create(title=generate_title(user_input))
         else:

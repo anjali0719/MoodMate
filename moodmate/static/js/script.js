@@ -66,8 +66,11 @@ async function sendMessage() {
     // Show typing indicator and simulate response
     showTypingIndicator();
 
+    const chatSession = document.getElementById('chatMessages');
+    const chatSessionId = chatSession.getAttribute('chat-session-id')
+
     try {
-        const response = await fetch('/api/v1/analyze-mood/', {
+        const response = await fetch(`/api/v1/analyze-mood/?chat_session_id=${chatSessionId ?? ''}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -143,6 +146,7 @@ document.querySelectorAll('.chat-navigation').forEach(btn => {
             .then(response => response.json())
             .then(data => {
                 const chatMessages = document.getElementById('chatMessages');
+                chatMessages.setAttribute('chat-session-id', `${chatSessionId}`);
                 chatMessages.innerHTML = '';
                 if (data.chat_obj && data.chat_obj.length > 0) {
                     data.chat_obj.forEach(entry => {

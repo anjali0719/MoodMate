@@ -8,7 +8,6 @@ def index_journal_entry(sender, instance, **kwargs):
     try:
         typesense_client.collections['journal_entries'].documents.upsert({
             'id': str(instance.id),
-            'journal_title': instance.journal_title,
             'input_text': instance.input_text,
             'response_text': instance.response_text,
             'created_at': int(instance.created_at.timestamp())

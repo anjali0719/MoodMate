@@ -1,6 +1,4 @@
-# MoodMate
-
-[![GitHub Repository](https://img.shields.io/badge/github-MoodMate-blue?style=flat&logo=github)](https://github.com/anjali0719/MoodMate)
+# MoodMate [![GitHub Repository](https://img.shields.io/badge/github-MoodMate-blue?style=flat&logo=github)](https://github.com/anjali0719/MoodMate)
 
 ## Prerequisites
 

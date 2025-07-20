@@ -27,7 +27,6 @@ def create_schema():
     'name': 'journal_entries',
     'fields': [
         {'name': 'id', 'type': 'string'},
-        {'name': 'journal_title', 'type': 'string'},
         {'name': 'input_text', 'type': 'string'},
         {'name': 'response_text', 'type': 'string'},
         {'name': 'created_at', 'type': 'int64', 'facet': True}
